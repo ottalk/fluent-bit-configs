@@ -3,37 +3,48 @@ import sys
 import json
 from datetime import datetime
 import time
+import random
 
 HOST, PORT = "localhost", 9999
-
-#m ='{"id": 2, "name": "abc"}'
-#m = {"id": 2, "name": "abc"} # a real dict.
-
-#data = json.dumps(m)
 
 # Create a socket (SOCK_STREAM means a TCP socket)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-try:
-    # Connect to server and send data
-    sock.connect((HOST, PORT))
-    seq_no=1
-    while(True):
-        curr_datetime=datetime.now()
-        curr_datetime_str = curr_datetime.strftime("%Y%m%d%H%M%S")
-        event={"HOST_DATE_TIME": curr_datetime_str,"SEQ": seq_no}
-        event_json=json.dumps(event)
+connected = True
+
+# Connect to server and send data
+sock.connect((HOST, PORT))
+
+while(True):
+    curr_datetime=datetime.now()
+    curr_datetime_str = curr_datetime.strftime("%Y%m%d%H%M%S")
+         
+    guid_1 = random.randint(11111, 99999)
+    guid_2 = random.randint(11111, 99999)
+        
+    event={"HOST_DATE_TIME": curr_datetime_str,"GUID_1": guid_1,"GUID_2": guid_2}
+    event_json=json.dumps(event)
+    try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
-        seq_no=seq_no+1
-        time.sleep(1)
-
-
+        time.sleep(0.0001)
+    except socket.error:
+        # set connection status and recreate socket
+        connected = False
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+        print("connection lost... reconnecting")
+        while not connected:
+            # attempt to reconnect, otherwise sleep for 2 seconds
+            try:
+                sock.connect((HOST, PORT))
+                connected = True
+                print("re-connection successful")
+            except socket.error:
+                time.sleep(2)
+    except Exception:
+        print("Exception")           
     # Receive data from the server and shut down
     #received = sock.recv(1024)
     #received = received.decode("utf-8")
 
-finally:
-    sock.close()
-
-print("Sent:     {}".format(data))
+    print("Sent:     {}".format(event_json))
 #print("Received: {}".format(received))

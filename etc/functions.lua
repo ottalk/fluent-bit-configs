@@ -10,5 +10,6 @@ function append_converted_timestamp(tag, timestamp, record)
 
     new_record = record
     new_record["HOST_DATE_TIME"] = newDatetime
+    new_record["SEQ_NO"]=record["GUID_1"] .. record["GUID_2"]
     return 2, timestamp, new_record
 end
