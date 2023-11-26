@@ -13,3 +13,18 @@ function append_converted_timestamp(tag, timestamp, record)
     new_record["SEQ_NO"]=record["GUID_1"] .. record["GUID_2"]
     return 2, timestamp, new_record
 end
+
+function lookup_processor(tag, timestamp, record)
+    processor_map={
+        AAABBC = "first entry,1",
+        AABCCC = "second entry,2",
+        CCCAAAA = "third entry,3",
+        DDDEEEE = "fourth entry,4",
+        ABBBBCCC = "fifth entry,5"
+    }
+    new_record = record
+    entry,number = processor_map[record["PROCESSOR"]]:match("(.+),(.+)")
+    new_record["LOOKUP_VALUE_ENTRY"] = entry
+    new_record["LOOKUP_VALUE_NUMBER"] = number
+    return 2, timestamp, new_record
+end

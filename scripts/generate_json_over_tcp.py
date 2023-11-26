@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import socket
 import sys
 import json
@@ -6,6 +8,8 @@ import time
 import random
 
 HOST, PORT = "localhost", 9999
+
+processor_list=["AAABBC","AABCCC","CCCAAAA","DDDEEEE","ABBBBCCC"]
 
 # Create a socket (SOCK_STREAM means a TCP socket)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,8 +25,10 @@ while(True):
          
     guid_1 = random.randint(11111, 99999)
     guid_2 = random.randint(11111, 99999)
+
+    processor = random.choice(processor_list)
         
-    event={"HOST_DATE_TIME": curr_datetime_str,"GUID_1": guid_1,"GUID_2": guid_2}
+    event={"HOST_DATE_TIME": curr_datetime_str,"GUID_1": guid_1,"GUID_2": guid_2,"PROCESSOR": processor}
     event_json=json.dumps(event)
     try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
