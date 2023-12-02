@@ -32,10 +32,11 @@ while(True):
     processor = random.choice(processor_list)
         
     event={"HOST_DATE_TIME": curr_datetime_str,"TRANSACTION_DATETIME": est_datetime_str,"GUID_1": guid_1,"GUID_2": guid_2,"PROCESSOR": processor}
+    print(event)
     event_json=json.dumps(event)
     try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
-        time.sleep(1)
+        time.sleep(0.001)
     except socket.error:
         # set connection status and recreate socket
         connected = False
@@ -55,5 +56,5 @@ while(True):
     #received = sock.recv(1024)
     #received = received.decode("utf-8")
 
-    print("Sent:     {}".format(event_json))
+    #print("Sent:     {}".format(event_json))
 #print("Received: {}".format(received))
