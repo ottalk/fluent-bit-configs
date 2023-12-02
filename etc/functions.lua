@@ -23,7 +23,7 @@ function lookup_processor(tag, timestamp, record)
         E = "fifth entry,5"
     }
     local new_record = record
-    print(record["GUID_1"],record["PROCESSOR"])
+    --print(record["GUID_1"],record["PROCESSOR"])
     local entry,number = processor_map[record["PROCESSOR"]]:match("(.+),(.+)")
     new_record["LOOKUP_VALUE_ENTRY"] = entry
     new_record["LOOKUP_VALUE_NUMBER"] = number
