@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timedelta
 import time
 import random
+from barnum import gen_data
 
 HOST, PORT = "localhost", 9999
 
@@ -30,8 +31,13 @@ while(True):
     guid_2 = random.randint(11111, 99999)
 
     processor = random.choice(processor_list)
-        
-    event={"HOST_DATE_TIME": curr_datetime_str,"TRANSACTION_DATETIME": est_datetime_str,"GUID_1": guid_1,"GUID_2": guid_2,"PROCESSOR": processor}
+
+    company_name=gen_data.create_company_name()
+    company_division_id=random.randint(11111, 11133)
+
+    transaction_amount=random.randint(111, 9999)
+
+    event={"HOST_DATE_TIME": curr_datetime_str,"TRANSACTION_DATETIME": est_datetime_str,"COMPANY_NAME":company_name,"COMPANY_DIVISION":company_division_id,"GUID_1": guid_1,"GUID_2": guid_2,"PROCESSOR": processor,"TRANSACTION_AMOUNT":transaction_amount}
     print(event)
     event_json=json.dumps(event)
     try:
