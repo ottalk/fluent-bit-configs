@@ -42,7 +42,7 @@ while(True):
     event_json=json.dumps(event)
     try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
-        time.sleep(0.001)
+        time.sleep(1)
     except socket.error:
         # set connection status and recreate socket
         connected = False
