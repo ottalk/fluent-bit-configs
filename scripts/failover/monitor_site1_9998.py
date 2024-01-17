@@ -20,11 +20,6 @@ app = Flask(__name__)
 t = None
 job_timer = None
 
-# Get feed status from 9998,9999
-# Check if peer monitor is available
-# Determine if switch is required
-# If so, coordinate switch between peers
-
 def check_feed():
     global current_feed_count_9998
     global feed_9998_status
