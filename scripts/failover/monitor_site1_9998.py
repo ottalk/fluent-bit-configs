@@ -64,7 +64,7 @@ def run_schedule():
 @app.route('/get_feed_status')
 def status():
     global feed_9998_status
-    return feed_9998_status+"\n"
+    return feed_9998_status
 
 @app.route('/set_feed_count_9998/<string:count>')
 def set_feed_count_9998(count):

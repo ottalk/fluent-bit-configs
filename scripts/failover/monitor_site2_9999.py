@@ -58,6 +58,11 @@ def run_schedule():
         schedule.run_pending()
         time.sleep(1)
 
+@app.route('/get_feed_status')
+def status():
+    global feed_9999_status
+    return feed_9999_status
+
 @app.route('/set_feed_count_9999/<string:count>')
 def set_feed_count_9998(count):
     global current_feed_count_9999
