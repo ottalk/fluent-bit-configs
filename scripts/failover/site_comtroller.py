@@ -26,24 +26,31 @@ def get_site_status(site):
 def switch_to_site1():
     config_dir='/home/ottalk/Github/fluent-bit-configs/etc/failover/'
     os.popen('cp '+config_dir+'site1/tcp9998-kafka.conf '+config_dir+'site1/tcp9998-live.conf')
-    os.popen('cp '+config_dir+'site2/tcp9999-null.conf '+config_dir+'site1/tcp9999-live.conf')
+    os.popen('cp '+config_dir+'site2/tcp9999-null.conf '+config_dir+'site2/tcp9999-live.conf')
+    response1 = requests.put("http://localhost:2020/api/v2/reload")
+    response2 = requests.put("http://localhost:2021/api/v2/reload")
     return "switch successful"
 
 def switch_to_site2():
     config_dir='/home/ottalk/Github/fluent-bit-configs/etc/failover/'
     os.popen('cp '+config_dir+'site1/tcp9998-null.conf '+config_dir+'site1/tcp9998-live.conf')
-    os.popen('cp '+config_dir+'site2/tcp9999-kafka.conf '+config_dir+'site1/tcp9999-live.conf')
+    os.popen('cp '+config_dir+'site2/tcp9999-kafka.conf '+config_dir+'site2/tcp9999-live.conf')
+    response1 = requests.put("http://localhost:2020/api/v2/reload")
+    response2 = requests.put("http://localhost:2021/api/v2/reload")
     return "switch successful"
 
 if __name__ == '__main__':
     
+    print("INFO: defaulting to site1 at startup")
     curr_site="site1"
+    response=switch_to_site1()
 
     while True:
         site1='http://localhost:59998/get_feed_status'
         site2='http://localhost:59999/get_feed_status'
         site1_status=get_site_status(site1)
         site2_status=get_site_status(site2)
+        print("curr_site: "+curr_site)
         print("site1: "+site1_status+" site2: "+site2_status)
         if (site1_status=="UP" and site2_status=="DOWN"):
             if (curr_site != "site1"):
