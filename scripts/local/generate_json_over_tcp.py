@@ -57,7 +57,8 @@ while(True):
             except socket.error:
                 time.sleep(2)
     except Exception:
-        print("Exception")           
+        print("Exception")
+    time.sleep(1)     
     # Receive data from the server and shut down
     #received = sock.recv(1024)
     #received = received.decode("utf-8")
