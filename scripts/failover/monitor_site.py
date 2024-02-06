@@ -117,10 +117,11 @@ if __name__ == '__main__':
     #with open("config.yml", "r") as ymlfile:
     #cfg = yaml.load(ymlfile)
 
-    for section in cfg:
-        print(section)
-    print(cfg["monitor"])
-    print(cfg["controller"])
+    #for section in cfg:
+    #    print(section)
+    print(cfg["monitor"][site])
+    #print(cfg["controller"])
+
 
 """
     feed_metrics_url_9998="http://localhost:2020/api/v1/metrics"
