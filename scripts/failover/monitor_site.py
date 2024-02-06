@@ -84,25 +84,29 @@ def set_feed_status(status):
 
 def main(argv):
     configfile = ''
+    site = ''
     try:
-        opts, args = getopt.getopt(argv,"h:c:",["configfile="])
+        opts, args = getopt.getopt(argv,"h:c:s:",["configfile=","site="])
     except getopt.GetoptError:
-        print ('ERROR: monitor_site.py -c <configfile>.yaml')
+        print ('ERROR: monitor_site.py -c <configfile>.yaml -s <sitename>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print ('INFO: monitor_site.py -c <configfile>.yaml')
+            print ('INFO: monitor_site.py -c <configfile>.yaml -s <sitename>')
             sys.exit()
         elif opt in ("-c", "--config"):
             configfile = arg
-    if configfile=='':
-        print ('ERROR: monitor_site.py -c <configfile>.yaml')
+        elif opt in ("-s", "--site"):
+            site = arg
+    if (configfile!='' and site!=''):
+        return configfile,site
+    else:
+        print ('ERROR: monitor_site.py -c <configfile>.yaml -s <sitename>')
         sys.exit(2)
-    return configfile
 
 if __name__ == '__main__':
-    configfile=main(sys.argv[1:])
-    print ('Config file is :', configfile)
+    configfile,site=main(sys.argv[1:])
+    print ('configfile: ', configfile, ' ,site:',site)
 
     try:
         with open(configfile, 'r') as configfile_ro:
@@ -115,8 +119,8 @@ if __name__ == '__main__':
 
     for section in cfg:
         print(section)
-        print(cfg["mysql"])
-        print(cfg["other"])
+    print(cfg["monitor"])
+    print(cfg["controller"])
 
 """
     feed_metrics_url_9998="http://localhost:2020/api/v1/metrics"
