@@ -33,7 +33,7 @@ while(True):
     processor = random.choice(processor_list)
 
     company_name=gen_data.create_company_name()
-    company_division_id=random.randint(11111, 11133)
+    company_division_id=random.randint(11111, 11117)
 
     transaction_amount=random.randint(111, 9999)
 
@@ -44,7 +44,7 @@ while(True):
     event_json=json.dumps(event)
     try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
-        time.sleep(1)
+        time.sleep(0.1)
     except socket.error:
         # set connection status and recreate socket
         connected = False
@@ -60,9 +60,4 @@ while(True):
                 time.sleep(2)
     except Exception:
         print("Exception")           
-    # Receive data from the server and shut down
-    #received = sock.recv(1024)
-    #received = received.decode("utf-8")
-
-    #print("Sent:     {}".format(event_json))
-#print("Received: {}".format(received))
+ 
