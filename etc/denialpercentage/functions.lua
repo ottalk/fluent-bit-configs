@@ -46,11 +46,50 @@ end
 
 function percentage_processor(tag, timestamp, record)
     new_record = {}
-    new_record["RECORD_TIME"]=record["RECORD_TIME()"]
+    --new_record["RECORD_TIME"]=record["RECORD_TIME()"]
+    new_record["WINDOW_STARTTIME"]=os.date("%Y-%m-%dT%H:%M:%S%Z", record["RECORD_TIME()"])
+    --new_record["WINDOW_ENDTIME"]=os.date("%Y-%m-%dT%H:%M:%S%Z", os.time(now)))
     new_record["TXN_DATETIME"]=record["TRANSACTION_DATETIME"]
     new_record["COMPANY_DIVISION"]=record["COMPANY_DIVISION"]
     new_record["TOTAL_TXNS"]=record["total_txns"]
     new_record["DENIAL_TXNS"]=record["denial_txns"]
     new_record["DENIAL_PERCENTAGE"]=(record["denial_txns"]/record["total_txns"])*100
     return 1, timestamp,new_record
+end
+
+function set_record_time(tag, timestamp, record)
+    local transaction_datetime = record["TRANSACTION_DATETIME"]
+    local year, month, day, hours, minutes, seconds = transaction_datetime:match('^(%d%d%d%d)(%d%d)(%d%d)(%d%d)(%d%d)(%d%d)$')
+    if not year then
+        -- Our entire match failed, and no captures were made
+        error('could not parse date "' .. datetime .. '"')
+    end
+    new_timestamp = os.time({day=day,month=month,year=year,hour=hours,min=minutes,sec=seconds})
+
+
+    local utc_seconds_shift = (function()
+        local ts = os.time()
+        local utc_date = os.date('!*t', ts)
+        local utc_time = os.time(utc_date)
+        local local_date = os.date('*t', ts)
+        local local_time = os.time(local_date)
+        return local_time - utc_time
+      end)()
+
+    --print(utc_seconds_shift)
+    --print(new_timestamp)
+    -- Manual hack for converting EST to UTC
+    new_timestamp=new_timestamp+18000
+    return 1, new_timestamp, record
+end
+
+function cb_parse_ts(tag, timestamp, record)
+    time=record["time"]
+     if (time == nil) then
+      return -1, 0, 0 -- drop entry instead of throwing error
+    end
+    pattern="(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+),(%d+)" -- example: 2020-01-14 17:23:58,634
+    year,month,day,hour,minute,second,millisecond=time:match(pattern)
+    new_timestamp = os.time({day=day,month=month,year=year,hour=hour,min=minute,sec=second}) + millisecond/1000
+    return 1, new_timestamp, record
 end

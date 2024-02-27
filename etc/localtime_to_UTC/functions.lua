@@ -1,4 +1,4 @@
-function M.makeTimeStamp(dateString)  
+function makeTimeStamp(dateString)  
     local pattern = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)([%+%-])(%d+)%:(%d+)"  
     local xyear, xmonth, xday, xhour, xminute,   
     xseconds, xoffset, xoffsethour, xoffsetmin = dateString:match(pattern)  

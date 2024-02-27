@@ -23,6 +23,8 @@ sock.connect((HOST, PORT))
 while(True):
     curr_datetime=datetime.now()
     est_datetime=curr_datetime - timedelta(hours=5)
+    # transaction time offset
+    est_datetime=est_datetime - timedelta(minutes=5)
 
     curr_datetime_str = curr_datetime.strftime("%Y%m%d%H%M%S")
     est_datetime_str = est_datetime.strftime("%Y%m%d%H%M%S")
