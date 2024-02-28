@@ -93,3 +93,13 @@ function cb_parse_ts(tag, timestamp, record)
     new_timestamp = os.time({day=day,month=month,year=year,hour=hour,min=minute,sec=second}) + millisecond/1000
     return 1, new_timestamp, record
 end
+
+local function round5min(var)
+    local h, m, ampm = var:match"^(%d+):(%d+)(%a+)$"
+    local t = (({am=0,pm=12})[ampm:lower()]+h%12)*60+m+2
+    t = t-t%5
+    m = t%60
+    t = (t-m)/60
+    h = t%12
+    return ("%d:%02d%s"):format((h-1)%12+1, m, ({"am","pm"})[(t-h)/12%2+1])
+ end
