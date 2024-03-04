@@ -64,7 +64,7 @@ function set_record_time(tag, timestamp, record)
         -- Our entire match failed, and no captures were made
         error('could not parse date "' .. datetime .. '"')
     end
-    new_timestamp = os.time({day=day,month=month,year=year,hour=hours,min=minutes,sec=seconds})
+    local new_timestamp = os.time({day=day,month=month,year=year,hour=hours,min=minutes,sec=seconds})
 
 
     local utc_seconds_shift = (function()
@@ -79,7 +79,31 @@ function set_record_time(tag, timestamp, record)
     --print(utc_seconds_shift)
     --print(new_timestamp)
     -- Manual hack for converting EST to UTC
-    new_timestamp=new_timestamp+18000
+    local new_timestamp=new_timestamp+18000
+
+
+    -- WINDOWS START AND END TIME CALC
+    --s1 = os.time()
+    --x1 = os.date('*t',s1)
+    --x1.day = x1.day - 200
+    --x1.isdst = nil -- this prevents DST time changes
+    --s2 = os.time(x1)
+    --print(s1, os.date("%c", s1))
+    --print(s2, os.date("%c", s2))
+    print("")
+    local window_timestamp = os.date('*t',new_timestamp)
+    print("CURR_UTC_TIME=",os.date("%c",os.time(window_timestamp)))
+    --print(window_timestamp.min)
+    window_timestamp.min = window_timestamp.min - (window_timestamp.min%5)
+    window_timestamp.sec = 0
+    --print(window_timestamp.min)
+    window_timestamp.isdst = nil
+    local window_starttime = os.time(window_timestamp)
+    print("WINDOW_STARTTIME=",os.date("%c",window_starttime))
+    window_timestamp.min = window_timestamp.min + 5
+    local window_endtime = os.time(window_timestamp)
+    print("WINDOW_ENDTIME=",os.date("%c",window_endtime)) 
+
     return 1, new_timestamp, record
 end
 
@@ -93,6 +117,17 @@ function cb_parse_ts(tag, timestamp, record)
     new_timestamp = os.time({day=day,month=month,year=year,hour=hour,min=minute,sec=second}) + millisecond/1000
     return 1, new_timestamp, record
 end
+
+
+local function round5min(var)
+    local h, m, ampm = var:match"^(%d+):(%d+)(%a+)$"
+    local t = (({am=0,pm=12})[ampm:lower()]+h%12)*60+m+2
+    t = t-t%5
+    m = t%60
+    t = (t-m)/60
+    h = t%12
+    return ("%d:%02d%s"):format((h-1)%12+1, m, ({"am","pm"})[(t-h)/12%2+1])
+ end
 
 local function round5min(var)
     local h, m, ampm = var:match"^(%d+):(%d+)(%a+)$"
