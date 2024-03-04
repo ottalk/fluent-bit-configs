@@ -47,9 +47,11 @@ end
 function percentage_processor(tag, timestamp, record)
     new_record = {}
     --new_record["RECORD_TIME"]=record["RECORD_TIME()"]
-    new_record["WINDOW_STARTTIME"]=os.date("%Y-%m-%dT%H:%M:%S%Z", record["RECORD_TIME()"])
+    --new_record["WINDOW_STARTTIME"]=os.date("%Y-%m-%dT%H:%M:%S%Z", record["RECORD_TIME()"])
     --new_record["WINDOW_ENDTIME"]=os.date("%Y-%m-%dT%H:%M:%S%Z", os.time(now)))
-    new_record["TXN_DATETIME"]=record["TRANSACTION_DATETIME"]
+    new_record["WINDOW_STARTTIME"]=record["WINDOW_STARTTIME"]
+    new_record["WINDOW_ENDTIME"]=record["WINDOW_ENDTIME"]
+    --new_record["TXN_DATETIME"]=record["TRANSACTION_DATETIME"]
     new_record["COMPANY_DIVISION"]=record["COMPANY_DIVISION"]
     new_record["TOTAL_TXNS"]=record["total_txns"]
     new_record["DENIAL_TXNS"]=record["denial_txns"]
@@ -58,6 +60,8 @@ function percentage_processor(tag, timestamp, record)
 end
 
 function set_record_time(tag, timestamp, record)
+
+    local new_record = record
     local transaction_datetime = record["TRANSACTION_DATETIME"]
     local year, month, day, hours, minutes, seconds = transaction_datetime:match('^(%d%d%d%d)(%d%d)(%d%d)(%d%d)(%d%d)(%d%d)$')
     if not year then
@@ -90,21 +94,24 @@ function set_record_time(tag, timestamp, record)
     --s2 = os.time(x1)
     --print(s1, os.date("%c", s1))
     --print(s2, os.date("%c", s2))
-    print("")
+    --print("")
     local window_timestamp = os.date('*t',new_timestamp)
-    print("CURR_UTC_TIME=",os.date("%c",os.time(window_timestamp)))
+    --print("CURR_UTC_TIME=",os.date("%c",os.time(window_timestamp)))
     --print(window_timestamp.min)
     window_timestamp.min = window_timestamp.min - (window_timestamp.min%5)
     window_timestamp.sec = 0
     --print(window_timestamp.min)
     window_timestamp.isdst = nil
     local window_starttime = os.time(window_timestamp)
-    print("WINDOW_STARTTIME=",os.date("%c",window_starttime))
+    --print("WINDOW_STARTTIME=",os.date("%c",window_starttime))
     window_timestamp.min = window_timestamp.min + 5
     local window_endtime = os.time(window_timestamp)
-    print("WINDOW_ENDTIME=",os.date("%c",window_endtime)) 
+    --print("WINDOW_ENDTIME=",os.date("%c",window_endtime)) 
+    
+    new_record["WINDOW_STARTTIME"]=window_starttime
+    new_record["WINDOW_ENDTIME"]=window_endtime
 
-    return 1, new_timestamp, record
+    return 2, new_timestamp, new_record
 end
 
 function cb_parse_ts(tag, timestamp, record)
@@ -117,24 +124,3 @@ function cb_parse_ts(tag, timestamp, record)
     new_timestamp = os.time({day=day,month=month,year=year,hour=hour,min=minute,sec=second}) + millisecond/1000
     return 1, new_timestamp, record
 end
-
-
-local function round5min(var)
-    local h, m, ampm = var:match"^(%d+):(%d+)(%a+)$"
-    local t = (({am=0,pm=12})[ampm:lower()]+h%12)*60+m+2
-    t = t-t%5
-    m = t%60
-    t = (t-m)/60
-    h = t%12
-    return ("%d:%02d%s"):format((h-1)%12+1, m, ({"am","pm"})[(t-h)/12%2+1])
- end
-
-local function round5min(var)
-    local h, m, ampm = var:match"^(%d+):(%d+)(%a+)$"
-    local t = (({am=0,pm=12})[ampm:lower()]+h%12)*60+m+2
-    t = t-t%5
-    m = t%60
-    t = (t-m)/60
-    h = t%12
-    return ("%d:%02d%s"):format((h-1)%12+1, m, ({"am","pm"})[(t-h)/12%2+1])
- end
