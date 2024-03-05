@@ -4,8 +4,8 @@ function makeTimeStamp(dateString)
     xseconds, xoffset, xoffsethour, xoffsetmin = dateString:match(pattern)  
     local convertedTimestamp = os.time({year = xyear, month = xmonth,   
     day = xday, hour = xhour, min = xminute, sec = xseconds})  
-    local offset = xoffsethour \* 60 + xoffsetmin  
-    if xoffset == "-" then offset = offset \* -1 end  
+    local offset = xoffsethour * 60 + xoffsetmin  
+    if xoffset == "-" then offset = offset * -1 end  
     return convertedTimestamp + offset  
    end  
 

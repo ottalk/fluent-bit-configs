@@ -102,10 +102,10 @@ function set_record_time(tag, timestamp, record)
     window_timestamp.sec = 0
     --print(window_timestamp.min)
     window_timestamp.isdst = nil
-    local window_starttime = os.time(window_timestamp)
+    local window_starttime = os.date("%Y-%m-%dT%H:%M:%S.000Z",os.time(window_timestamp))
     --print("WINDOW_STARTTIME=",os.date("%c",window_starttime))
     window_timestamp.min = window_timestamp.min + 5
-    local window_endtime = os.time(window_timestamp)
+    local window_endtime = os.date("%Y-%m-%dT%H:%M:%S.000Z",os.time(window_timestamp))
     --print("WINDOW_ENDTIME=",os.date("%c",window_endtime)) 
     
     new_record["WINDOW_STARTTIME"]=window_starttime

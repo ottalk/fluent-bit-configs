@@ -23,8 +23,9 @@ sock.connect((HOST, PORT))
 while(True):
     curr_datetime=datetime.now()
     est_datetime=curr_datetime - timedelta(hours=5)
-    # transaction time offset
-    est_datetime=est_datetime - timedelta(minutes=5)
+    # transaction time offset - random minutes
+    transaction_random_offset_mins=random.randint(0,59)
+    est_datetime=est_datetime - timedelta(minutes=transaction_random_offset_mins)
 
     curr_datetime_str = curr_datetime.strftime("%Y%m%d%H%M%S")
     est_datetime_str = est_datetime.strftime("%Y%m%d%H%M%S")
@@ -46,7 +47,7 @@ while(True):
     event_json=json.dumps(event)
     try:
         sock.sendall(bytes(event_json,encoding="utf-8"))
-        time.sleep(0.1)
+        time.sleep(0.0001)
     except socket.error:
         # set connection status and recreate socket
         connected = False
