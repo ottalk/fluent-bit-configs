@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+import socket
+import sys
+import json
+from datetime import datetime, timedelta
+import time
+import random
+from barnum import gen_data
+
+HOST, PORT = "localhost", 9998
+
+processor_list=["A","B","C","D","E"]
+
+# Create a socket (SOCK_STREAM means a TCP socket)
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+connected = True
+
+# Connect to server and send data
+sock.connect((HOST, PORT))
+
+while(True):
+    curr_datetime=datetime.now()
+    est_datetime=curr_datetime - timedelta(hours=5)
+    # transaction time offset - random minutes
+    #transaction_random_offset_mins=random.randint(0,59)
+    #est_datetime=est_datetime - timedelta(minutes=transaction_random_offset_mins)
+    est_datetime=est_datetime - timedelta(seconds=2)
+    
+    curr_datetime_str = curr_datetime.strftime("%Y%m%d%H%M%S")
+    est_datetime_str = est_datetime.strftime("%Y%m%d%H%M%S")
+         
+    guid_1 = random.randint(11111, 99999)
+    guid_2 = random.randint(11111, 99999)
+
+    processor = random.choice(processor_list)
+
+    company_name=gen_data.create_company_name()
+    company_division_id=random.randint(11111, 11117)
+
+    transaction_amount=random.randint(111, 9999)
+
+    record_type=random.randint(1,3)
+
+    event={"HOST_DATE_TIME": curr_datetime_str,"TRANSACTION_DATETIME": est_datetime_str,"COMPANY_NAME":company_name,"COMPANY_DIVISION":company_division_id,"GUID_1": guid_1,"GUID_2": guid_2,"PROCESSOR": processor,"TRANSACTION_AMOUNT":transaction_amount,"RECORD_TYPE":record_type}
+    #print(event)
+    event_json=json.dumps(event)
+    try:
+        sock.sendall(bytes(event_json,encoding="utf-8"))
+        time.sleep(0.1)
+    except socket.error:
+        # set connection status and recreate socket
+        connected = False
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+        print("connection lost... reconnecting")
+        while not connected:
+            # attempt to reconnect, otherwise sleep for 2 seconds
+            try:
+                sock.connect((HOST, PORT))
+                connected = True
+                print("re-connection successful")
+            except socket.error:
+                time.sleep(2)
+    except Exception:
+        print("Exception")           
+ 
