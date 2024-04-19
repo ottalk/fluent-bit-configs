@@ -14,8 +14,6 @@ function append_converted_timestamp(tag, timestamp, record)
     return 2, timestamp, new_record
 end
 
-
-
 function count_processor(tag, timestamp,record)
     local new_record = record
     new_record["SEQ_NO"]=record["GUID_1"] .. record["GUID_2"]
@@ -92,6 +90,16 @@ function set_record_time(tag, timestamp, record)
     new_record["WINDOW_ENDTIME"]=window_endtime
 
     return 2, new_timestamp, new_record
+end
+
+function enrich_count_unique_txns_record(tag,timestamp,record)
+    local new_record = record
+    local ts = os.time()
+    local utc_date = os.date('!*t', ts)
+    new_record["SOURCE_DATETIME"] = os.date("%Y-%m-%dT%H:%M:%S.000Z",os.time(utc_date))
+    new_record["SOURCE_SYSTEM"] = "SYSTEM1"
+    return 1,timestamp,new_record
+
 end
 
 function cb_parse_ts(tag, timestamp, record)
